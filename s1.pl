@@ -10,13 +10,13 @@ getTheResult(N,[],L,R,Max):-			%put the rest number into the list
 		N=<Max,
 		Nnew is N+1,
 		getTheResult(Nnew,[],[N|L],R,Max).
-			
+
 getTheResult(N,[H|T],L,R,Max):-			%put the number which is not prime into the list
 		N<Max,
 		Nnew is N+1,
 		N =\= H,
 		getTheResult(Nnew,[H|T],[N|L],R,Max).
-		
+
 getTheResult(N,[H|T],L,R,Max):- 		%do not put the prime number into the list
 		N<Max,
 		Nnew is N+1,
@@ -36,7 +36,7 @@ setPrimeNumber(Prime,L,R,Max):-
 		deleteNum(Prime,L,Lnew),
 		PrimeNew is Prime+1,		
 		setPrimeNumber(PrimeNew,Lnew,R,Max).
-		
+
 setPrimeNumber(Prime,L,R,Max):-
 		Prime=<sqrt(Max),
 		not(isPrime(Prime,2)),
@@ -45,31 +45,31 @@ setPrimeNumber(Prime,L,R,Max):-
 
 setPrimeNumber(Prime,L,L,Max):-
 		Prime>sqrt(Max).
-				
+
 deleteNum(Prime,L,R):- deleteNotPrime(Prime,L,[],R).
 deleteNotPrime(Prime,[H|T],L,R):-
 		H =\= Prime,
 		H mod Prime =:= 0,
 		deleteNotPrime(Prime,T,L,R).
-			
+
 deleteNotPrime(Prime,[H|T],L,R):-
 		H =:= Prime,
 		deleteNotPrime(Prime,T,[H|L],R).
-		
+
 deleteNotPrime(Prime,[H|T],L,R):-
 		H mod Prime =\= 0,
 		deleteNotPrime(Prime,T,[H|L],R).
 
 deleteNotPrime(_,[],L,R):-
 		rev(L,R).
-					
+
 rev(L,R):-  theRev(L,[],R).
 theRev([],A,A).
 theRev([H|T],A,R):-  theRev(T,[H|A],R). 
-		
+
 isPrime(X,X).
 isPrime(X,Y):-
 		Y<X,
 		0 =\= X mod Y,
 		Ynew is Y+1,
-		isPrime(X,Ynew).	
+		isPrime(X,Ynew).
