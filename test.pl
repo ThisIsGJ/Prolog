@@ -1,24 +1,15 @@
 getPP(Max,R):-
 		getPrimeList(Max,L),				%get all the prime which is less than 100	
-		getPrimeMPrime(Max,L,Lpp),			%get all the number which is prime*prime
-		getPPPList(Max,L,[],Lppp),			%get all the number which is p*p*p
-		app(Lppp,Lpp,Lnew),
-		quicksort(Lnew,R).					%sort the all the possible numbers.
-		
+		Maxnew is (Max/2-1)*(Max/2+1),
+		getPPList(Maxnew,L,L,[],R).			%get all the number which is prime*prime
 
-%get all the number which is p*p*p
-getPPPList(Max,[H|T],L2,Lppp):-
-				H*H+H=<Max,
-				PPP is H*H*H,
-				getPPPList(Max,T,[PPP|L2],Lppp).
-getPPPList(Max,[H|T],L,L):-
-				H*H+H>Max.
-getPPPList(Max,[],L,L).				
+		
+			
 									
 %get all the number which is prime*prime
-getPrimeMPrime(Max,L,R):- 
-		Maxnew is (Max/2-1)*(Max/2+1), %the max product :51*49
-		getPPList(Maxnew,L,L,[],R).
+
+		
+
 	
 %[H|T] 提取prime L1用来被乘以的所有primeList L2用来储存List	
 getPPList(Max,[],L1,L2,L2).
@@ -36,10 +27,10 @@ getEachPP(Max,E,[H|T],L,R):-
 		getEachPP(Max,E,T,Lnew,R).	
 getEachPP(Max,E,[H|T],L,R):-
 		E>H,
-		E*H=<Max,
+		E*H=<Max,		
 		getEachPP(Max,E,T,L,R).			
 getEachPP(Max,E,[H|T],L,L):-
-		E*H>Max.		
+		E*H>Max.
 getEachPP(Max,E,[],L,L).	
 
 %get all the prime number which < 100
