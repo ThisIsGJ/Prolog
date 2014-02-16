@@ -1,10 +1,40 @@
 s1(Q,Max):-
 		Maxnew is Max-1,
 		getPrimeList(Maxnew,LPrime),			%small -> big
+		Maxnew2 is Max/2,
+		getPrimeList(Maxnew2,LPrimeS),			%the number which is <50
 		setTheNum(2,Maxnew,LPrime,[],L1),		%all possible number except prime number big->smmal
-		toGetLL(Max,L1,L1new),					%not p* not p
-		quicksort(L1new,Q).
+		toGetPL(Max,LPrimeS,L1,PLList),				%not p* p
+		toGetLL(Max,L1,LLList),					%not p* not p
+		app(PLList,LLList,Result),
+		quicksort(Result,Q).
 
+toGetPL(Max,L1,L2,R):-
+		getPLList(Max,L1,L2,[],R).
+
+getPLList(Max,[],L,Ls,Ls).
+getPLList(Max,[H|T],L,Ls,R):-
+		getEachPL(Max,H,L,[],PLnew),
+		app(PLnew,Ls,Lsnew),
+		getPLList(Max,T,L,Lsnew,R).	
+
+getEachPL(Max,E,[],L,L).
+getEachPL(Max,E,[H|T],L,R):-
+		E+H=<Max,
+		E*E=\=H,
+		Sum is E+H,
+		Product is E*H,
+		app([[E,H,Sum,Product]],L,Lnew),
+		getEachPL(Max,E,T,Lnew,R).	
+										
+getEachPL(Max,E,[H|T],L,R):-
+		E+H=<Max,
+		E*E=:=H, 	     						%cannot p*p*p such as 2*2*2=2*4=8					 					
+		getEachPL(Max,E,T,L,R).	
+getEachPL(Max,E,[H|T],L,R):-
+		E+H>Max,						%%可提升
+		getEachPL(Max,E,T,L,R).
+		
 toGetLL(Max,L,R):- 
 		rev(L,Lnew),
 		getLLList(Max,Lnew,Lnew,[],R).
@@ -20,13 +50,12 @@ getEachL(Max,E,[],L,L).
 getEachL(Max,E,[H|T],L,R):-
 		E=<H,
 		E+H=<Max,
-		E*E=\=H,
 		not(testP2(E,H)),					%cannot have 2^11
 		Sum is E+H,
 		Product is E*H,
 		app([[E,H,Sum,Product]],L,Lnew),
 		getEachL(Max,E,T,Lnew,R).	
-					
+
 getEachL(Max,E,[H|T],L,R):-
 		E>H,
 		E+H=<Max,
@@ -34,16 +63,11 @@ getEachL(Max,E,[H|T],L,R):-
 getEachL(Max,E,[H|T],L,R):-
 		E=<H,
 		testP2(E,H),						%cannot have 2^11     					
-		getEachL(Max,E,T,L,R).	
-getEachL(Max,E,[H|T],L,R):-
-		E=<H,
-		E*E=:=H, 
-		E+H=<Max,     						%cannot p*p*p such as 2*2*2=2*4=8					 					
-		getEachL(Max,E,T,L,R).	
+		getEachL(Max,E,T,L,R).		
 getEachL(Max,E,[H|T],L,R):-
 		E+H>Max,
 		getEachL(Max,E,T,L,R).
-								
+
 
 testP2(E,H):-
 		E*H=:=2048,
