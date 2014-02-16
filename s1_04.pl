@@ -20,6 +20,7 @@ getEachL(Max,E,[],L,L).
 getEachL(Max,E,[H|T],L,R):-
 		E=<H,
 		E+H=<Max,
+		E*E=\=H,
 		not(testP2(E,H)),					%cannot have 2^11
 		Sum is E+H,
 		Product is E*H,
@@ -31,14 +32,18 @@ getEachL(Max,E,[H|T],L,R):-
 		E+H=<Max,
 		getEachL(Max,E,T,L,R).					
 getEachL(Max,E,[H|T],L,R):-
+		E=<H,
 		testP2(E,H),						%cannot have 2^11     					
 		getEachL(Max,E,T,L,R).	
 getEachL(Max,E,[H|T],L,R):-
+		E=<H,
 		E*E=:=H, 
-		%E+H=<Max,     						%cannot p*p*p such as 2*2*2=2*4=8					 					
+		E+H=<Max,     						%cannot p*p*p such as 2*2*2=2*4=8					 					
 		getEachL(Max,E,T,L,R).	
-getEachL(Max,E,[H|T],L,L):-
-		E+H>Max.						
+getEachL(Max,E,[H|T],L,R):-
+		E+H>Max,
+		getEachL(Max,E,T,L,R).
+								
 
 testP2(E,H):-
 		E*H=:=2048,
