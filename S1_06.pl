@@ -1,7 +1,8 @@
+
 s1(Q,Max):-
 		Maxnew is Max-1,
 		getPrimeList(Maxnew,LPrime),			%small -> big
-		Maxnew2 is Max/2,
+		Maxnew2 is Max/2-1,
 		getPrimeList(Maxnew2,LPrimeS),			%the number which is <50
 		setTheNum(2,Maxnew,LPrime,[],L1),		%all possible number except prime number big->smmal
 		toGetPL(Max,LPrimeS,L1,PLList),				%not p* p
@@ -22,6 +23,7 @@ getEachPL(Max,E,[],L,L).
 getEachPL(Max,E,[H|T],L,R):-
 		E+H=<Max,
 		E*E=\=H,
+		testLL(E,H),
 		Sum is E+H,
 		Product is E*H,
 		app([[E,H,Sum,Product]],L,Lnew),
@@ -29,7 +31,7 @@ getEachPL(Max,E,[H|T],L,R):-
 										
 getEachPL(Max,E,[H|T],L,R):-
 		E+H=<Max,
-		E*E=:=H, 	     						%cannot p*p*p such as 2*2*2=2*4=8					 					
+		E*E=:=H;not(testLL(E,H)), 	     						%cannot p*p*p such as 2*2*2=2*4=8					 					
 		getEachPL(Max,E,T,L,R).	
 getEachPL(Max,E,[H|T],L,R):-
 		E+H>Max,						%%可提升
@@ -48,8 +50,9 @@ getLLList(Max,[H|T],L1,L2,R):-
 
 getEachL(Max,E,[],L,L).
 getEachL(Max,E,[H|T],L,R):-
-		E>=H,
+		E=<H,
 		E+H=<Max,
+		testLL(E,H),
 		not(testP2(E,H)),					%cannot have 2^11
 		Sum is E+H,
 		Product is E*H,
@@ -57,22 +60,42 @@ getEachL(Max,E,[H|T],L,R):-
 		getEachL(Max,E,T,Lnew,R).	
 
 getEachL(Max,E,[H|T],L,R):-
-		E<H,
+		E>H,
 		E+H=<Max,
 		getEachL(Max,E,T,L,R).					
 getEachL(Max,E,[H|T],L,R):-
-		E>=H,
+		E=<H,
+		testLL(E,H),
 		testP2(E,H),						%cannot have 2^11     					
-		getEachL(Max,E,T,L,R).		
+		getEachL(Max,E,T,L,R).
+getEachL(Max,E,[H|T],L,R):-
+		E=<H,
+		E+H=<Max,
+		not(testLL(E,H)),
+		getEachL(Max,E,T,L,R).
+						
 getEachL(Max,E,[H|T],L,L):-
 		E+H>Max.
-
 
 testP2(E,H):-
 		E*H=:=2048,
 		E+H=:=96.										
 
 
+testLL(E,H):-
+		getSamllestFactorOfH(H,2,F),
+		E*F+H/F=<100.
+
+%get the smalles factor of H
+getSamllestFactorOfH(E,T,R):-
+		T<E,
+		E mod T=\=0,
+		Tnew is T+1,
+		getSamllestFactorOfH(E,Tnew,R).		
+getSamllestFactorOfH(E,T,T):-
+		T<E,
+		E mod T=:= 0.	
+		
 setTheNum(Max,Max,[],L,L).				
 setTheNum(N,Max,[],L,R):-
 		N<Max,
@@ -87,9 +110,7 @@ setTheNum(N,Max,[H|T],L,R):-
 		N<Max,
 		N=:=H,
 		Nnew is N+1,
-		setTheNum(Nnew,Max,T,L,R).		
-		
-		
+		setTheNum(Nnew,Max,T,L,R).	
 
 getPrimeList(Max,R):-setList(Max,[],R,Max).
 setList(1,L,R,Max):-setPrimeNumber(2,L,R,Max).
@@ -134,7 +155,8 @@ deleteNotPrime(_,[],L,R):-
 rev(L,R):-  theRev(L,[],R).
 theRev([],A,A).
 theRev([H|T],A,R):-  theRev(T,[H|A],R). 
-		
+
+%test the number if is prime number		
 isPrime(X,X).
 isPrime(X,Y):-
 		Y<X,
