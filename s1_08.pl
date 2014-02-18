@@ -13,13 +13,13 @@ s1(Q,Max):-
 toGetPL(Max,L1,L2,R):-
 		getPLList(Max,L1,L2,[],R).
 
-getPLList(Max,[],L,Ls,Ls).
+getPLList(_,[],_,Ls,Ls).
 getPLList(Max,[H|T],L,Ls,R):-
 		getEachPL(Max,H,L,[],PLnew),
 		app(PLnew,Ls,Lsnew),
 		getPLList(Max,T,L,Lsnew,R).	
 
-getEachPL(Max,E,[],L,L).
+getEachPL(_,_,[],L,L).
 getEachPL(Max,E,[H|T],L,R):-
 		E+H=<Max,
 		E*E=\=H,
@@ -47,13 +47,13 @@ toGetLL(Max,L,R):-
 		getLLList(Max,Lnew,Lnew,[],R).
 	
 
-getLLList(Max,[],L1,L2,L2).
+getLLList(_,[],_,L2,L2).
 getLLList(Max,[H|T],L1,L2,R):- 
 		getEachL(Max,H,L1,[],Lnew),
 		app(Lnew,L2,L2new),
 		getLLList(Max,T,L1,L2new,R).		
 
-getEachL(Max,E,[],L,L).
+getEachL(_,_,[],L,L).
 getEachL(Max,E,[H|T],L,R):-
 		E=<H,
 		E+H=<Max,
@@ -79,7 +79,7 @@ getEachL(Max,E,[H|T],L,R):-
 		not(testLL(E,H)),
 		getEachL(Max,E,T,L,R).
 						
-getEachL(Max,E,[H|T],L,L):-
+getEachL(Max,E,[H|_],L,L):-
 		E+H>Max.
 
 testP2(E,H):-
@@ -101,7 +101,7 @@ getSamllestFactorOfH(E,T,T):-
 		T<E,
 		E mod T=:= 0.	
 		
-setTheNum(Max,Max,L2,L,L).				
+setTheNum(Max,Max,_,L,L).				
 setTheNum(N,Max,[],L,R):-
 		N<Max,
 		Nnew is N+1,
