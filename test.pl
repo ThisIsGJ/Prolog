@@ -1,14 +1,14 @@
 %test([[1,1,1,1],[2,2,2,2],[2,2,2,2],[3,3,3,3],[7,7,7,7]],[],R).
-test([[_,_,_,D]|T],L,R):-	
+deletePartProduct([[_,_,_,D]|T],L,R):-	
 		member([_,_,_,D],T),
 		deleteDuplicateNum(D,T,[],Tnew),
-		test(Tnew,L,R).
+		deletePartProduct(Tnew,L,R).
 					
-test([[A,B,C,D]|T],L,R):-	
+deletePartProduct([[A,B,C,D]|T],L,R):-	
 		not(member([_,_,_,D],T)),
 		app([[A,B,C,D]],L,Lnew),
-		test(T,Lnew,R).									
-test([],Ls,Ls).									
+		deletePartProduct(T,Lnew,R).									
+deletePartProduct([],Ls,Ls).									
 
 
 deleteDuplicateNum(N,[[_,_,_,D]|T],L,R):-

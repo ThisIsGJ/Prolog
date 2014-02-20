@@ -1,10 +1,11 @@
-%have duplicate answer
+%finish
 s3(Q,Max):-
 		s2(S2Result,Max),
 		deletePartProduct(S2Result,[],Result),
 		quicksort(Result,Q).
 
 
+%delete the product which x+y could have more than one sum in S2result
 deletePartProduct([[_,_,_,D]|T],L,R):-	
 		member([_,_,_,D],T),
 		deleteDuplicateNum(D,T,[],Tnew),
@@ -281,5 +282,5 @@ remove(X,[X|R],R).
 remove(X,[E|R],[E|T]) :- remove(X,R,T).	
 
 
-member(E,[E|_]).
+member(E,[E|_]):-!.
 member(E,[_|R]) :- member(E,R).

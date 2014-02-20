@@ -302,5 +302,5 @@ remove(X,[X|R],R).
 remove(X,[E|R],[E|T]) :- remove(X,R,T).	
 
 
-member(E,[E|_]).
+member(E,[E|_]):-!.
 member(E,[_|R]) :- member(E,R).
