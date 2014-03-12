@@ -77,7 +77,6 @@ toGetLL(Max,L,R):-
 		rev(L,Lnew),
 		getLLList(Max,Lnew,Lnew,[],R).
 	
-
 getLLList(_,[],_,L2,L2).
 getLLList(Max,[H|T],L1,L2,R):- 
 		getEachL(Max,H,L1,[],Lnew),
@@ -168,11 +167,8 @@ isPrime(X,Y):-
 		Ynew is Y+1,
 		isPrime(X,Ynew).	
 
-
-
 app([],L,L).
 app([E|T],L,[E|M]) :- app(T,L,M).
-
 
 merge_sort2([],[]).     % empty list is already sorted
 merge_sort2([X],[X]).   % single element list is already sorted
@@ -196,7 +192,6 @@ merge([],L,L).
 merge(L,[],L):-L\=[].
 merge([[A1,B1,S1,P1]|T1],[[A2,B2,S2,P2]|T2],[[A1,B1,S1,P1]|T]):-P1=<P2,merge(T1,[[A2,B2,S2,P2]|T2],T).
 merge([[A1,B1,S1,P1]|T1],[[A2,B2,S2,P2]|T2],[[A2,B2,S2,P2]|T]):-P1>P2,merge([[A1,B1,S1,P1]|T1],T2,T).
-
 
 divide(L,L1,L2):-halve(L,L1,L2).
 halve(L,A,B):-hv2(L,L,A,B).
