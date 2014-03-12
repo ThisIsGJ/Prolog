@@ -1,18 +1,38 @@
-%finish
+s4(Q,Max):-	
+		s3(S3Result,Max),
+		findTheFinalAnswer(S3Result,S3Result,Q).
+
+
+findTheFinalAnswer([[_,_,S,_]|T],L,R):-
+		member([_,_,S,_],T),
+		deleteDuplicateSum(S,T,[],Tnew),
+		findTheFinalAnswer(Tnew,L,R).
+findTheFinalAnswer([[A,B,S,P]|T],_,[A,B,S,P]):-
+		not(member([_,_,S,_],T)).
+				
+deleteDuplicateSum(N,[[_,_,S,_]|T],L,R):-
+		N=:=S,
+		deleteDuplicateSum(N,T,L,R).
+deleteDuplicateSum(N,[[A,B,S,P]|T],L,R):-
+		N=\=S,
+		app([[A,B,S,P]],L,Lnew),
+		deleteDuplicateSum(N,T,Lnew,R).
+deleteDuplicateSum(_,[],L,L).
+
+	
 s3(Q,Max):-
 		s2(S2Result,Max),
 		deletePartProduct(S2Result,[],Result),
 		quicksort(Result,Q).
 
 
-%delete the product which x+y could have more than one sum in S2result
 deletePartProduct([[_,_,_,D]|T],L,R):-	
-		theMember([_,_,_,D],T),
+		member([_,_,_,D],T),
 		deleteDuplicateNum(D,T,[],Tnew),
 		deletePartProduct(Tnew,L,R).
 					
 deletePartProduct([[A,B,C,D]|T],L,R):-	
-		not(theMember([_,_,_,D],T)),
+		not(member([_,_,_,D],T)),
 		app([[A,B,C,D]],L,Lnew),
 		deletePartProduct(T,Lnew,R).									
 deletePartProduct([],Ls,Ls).									
@@ -125,7 +145,7 @@ getLLList(Max,[H|T],L1,L2,R):-
 
 getEachL(_,_,[],L,L).
 getEachL(Max,E,[H|T],L,R):-
-		E=<H,
+		E<H,
 		E+H=<Max,
 		testLL(E,H),
 		not(testP2(E,H)),					%cannot have 2^11
@@ -135,16 +155,16 @@ getEachL(Max,E,[H|T],L,R):-
 		getEachL(Max,E,T,Lnew,R).	
 
 getEachL(Max,E,[H|T],L,R):-
-		E>H,
+		E>=H,
 		E+H=<Max,
 		getEachL(Max,E,T,L,R).					
 getEachL(Max,E,[H|T],L,R):-
-		E=<H,
+		E<H,
 		testLL(E,H),
 		testP2(E,H),						%cannot have 2^11     					
 		getEachL(Max,E,T,L,R).
 getEachL(Max,E,[H|T],L,R):-
-		E=<H,
+		E<H,
 		E+H=<Max,
 		not(testLL(E,H)),
 		getEachL(Max,E,T,L,R).
@@ -281,6 +301,5 @@ perm(X,[E|Y]) :- remove(E,X,Z),
 remove(X,[X|R],R).
 remove(X,[E|R],[E|T]) :- remove(X,R,T).	
 
-
-theMember(E,[E|_]):-!.
-theMember(E,[_|R]) :- theMember(E,R).
+member(E,[E|_]):-!.
+member(E,[_|R]) :- member(E,R).

@@ -168,6 +168,21 @@ isPrime(X,Y):-
 		Ynew is Y+1,
 		isPrime(X,Ynew).	
 
+quicksort2([],[]).
+quicksort2(List,Sorted)     :- var(List), 
+                             !, 
+                             perm(Sorted,List),
+                             quicksort2(List,Sorted).
+quicksort2([X|Tail],Sorted) :- split2(X,Tail,Small,Big),
+                             quicksort2(Small,SortedSmall),
+                             quicksort2(Big,SortedBig),
+                             app(SortedSmall,[X|SortedBig],Sorted).
+
+split2(_,[],[],[]).
+split2([A,B,C,D],[[E,F,G,H]|Tail],[[E,F,G,H]|Small],Big)  :- D > H,
+                                   !,
+                                   split2([A,B,C,D],Tail,Small,Big).
+split2( [A,B,C,D],[[E,F,G,H]|Tail],Small,[[E,F,G,H]|Big]) :- split2([A,B,C,D],Tail,Small,Big).
 
 
 app([],L,L).
@@ -182,8 +197,8 @@ merge_sort2(List,Sorted):-
 	merge2(Sorted1,Sorted2,Sorted).                  % and sorted parts are merged
 merge2([],L,L).
 merge2(L,[],L):-L\=[].
-merge2([[A1,B1,S1,P1]|T1],[[A2,B2,S2,P2]|T2],[[A1,B1,S1,P1]|T]):-S1=<S2,merge(T1,[[A2,B2,S2,P2]|T2],T).
-merge2([[A1,B1,S1,P1]|T1],[[A2,B2,S2,P2]|T2],[[A2,B2,S2,P2]|T]):-S1>S2,merge([[A1,B1,S1,P1]|T1],T2,T).
+merge2([[A1,B1,S1,P1]|T1],[[A2,B2,S2,P2]|T2],[[A1,B1,S1,P1]|T]):-S1=<S2,merge2(T1,[[A2,B2,S2,P2]|T2],T).
+merge2([[A1,B1,S1,P1]|T1],[[A2,B2,S2,P2]|T2],[[A2,B2,S2,P2]|T]):-S1>S2,merge2([[A1,B1,S1,P1]|T1],T2,T).
 
 
 merge_sort([],[]).     % empty list is already sorted

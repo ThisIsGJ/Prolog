@@ -1,6 +1,6 @@
-%right final s1 按S 排列 
+
 test(Max,L):-
-	s1(Q,Max),
+	s2(Q,Max),
 	getn(Q,0,L).
 	
 getn([_|T],R,N):-
@@ -8,18 +8,21 @@ getn([_|T],R,N):-
 	getn(T,Rnew,N).
 getn([],R,R).
 
-s1(Q,Max):-
+s2(Q,Max):-
 		Maxnew is Max-1,
 		getPrimeList(Maxnew,LPrime),			%small -> big
 		Maxnew2 is Max/2,
 		getPrimeList(Maxnew2,LPrimeS),			%the number which is <50
 		setTheNum(2,Maxnew,LPrime,[],L1),		%all possible number except prime number big->smmal
-		toGetPL(Max,LPrimeS,L1,PLList),				%not p* p
-		toGetLL(Max,L1,LLList),					%not p* not p
+		getMaxPrime(Maxnew2,MaxPrime),
+		BigestSum is MaxPrime+2,
+		toGetPL(BigestSum,LPrimeS,L1,PLList),				%not p* p
+		toGetLL(BigestSum,L1,LLList),					%not p* not p
 		app(PLList,LLList,Result),
 		merge_sort(Result,Result2),
 		getFinalAns(Result2,[],Result3),
 		merge_sort2(Result3,Q).
+
 
 getFinalAns([[A1,B1,S1,P1],[A2,B2,S2,P2]|T],L,R):-
 		P1=:=P2,
@@ -42,6 +45,13 @@ doMore(N,[[A,B,S,P]|T],R,R,[[A,B,S,P]|T]):-
 		N=\=P.		
 doMore(_,[],R,R,[]).
 
+getMaxPrime(N,R):-
+		not(isPrime(N,2)),
+		Nnew is N+1,
+		getMaxPrime(Nnew,R).
+getMaxPrime(R,R):-
+		isPrime(R,2).
+
 
 toGetPL(Max,L1,L2,R):-
 		getPLList(Max,L1,L2,[],R).
@@ -54,23 +64,33 @@ getPLList(Max,[H|T],L,Ls,R):-
 
 getEachPL(_,_,[],L,L).
 getEachPL(Max,E,[H|T],L,R):-
-		E+H=<Max,		
-		E<H,
+		E+H<Max,	
 		Sum is E+H,
+		Sum mod 2 =\=0,	
+		E<H,		
 		Product is E*H,
 		app([[E,H,Sum,Product]],L,Lnew),
 		getEachPL(Max,E,T,Lnew,R).	
 
 getEachPL(Max,E,[H|T],L,R):-
-		E+H=<Max,		
+		E+H<Max,	
+		Sum is E+H,
+		Sum mod 2 =\=0,	
 		E>H,
 		Sum is E+H,
 		Product is E*H,
 		app([[H,E,Sum,Product]],L,Lnew),
 		getEachPL(Max,E,T,Lnew,R).	
+
+
+getEachPL(Max,E,[H|T],L,R):-
+		E+H<Max,	
+		Sum is E+H,
+		Sum mod 2 =:=0,
+		getEachPL(Max,E,T,L,R).
 					
 getEachPL(Max,E,[H|T],L,R):-
-		E+H>Max,						%%可提升
+		E+H>=Max,						%%可提升
 		getEachPL(Max,E,T,L,R).
 		
 toGetLL(Max,L,R):- 
@@ -86,19 +106,26 @@ getLLList(Max,[H|T],L1,L2,R):-
 
 getEachL(_,_,[],L,L).
 getEachL(Max,E,[H|T],L,R):-
-		E<H,
-		E+H=<Max,		
-		Sum is E+H,
+		E<H,		
+		E+H<Max,	
+		Sum is E+H,	
+		Sum mod 2 =\=0,			
 		Product is E*H,		
 		app([[E,H,Sum,Product]],L,Lnew),
 		getEachL(Max,E,T,Lnew,R).										
 				
 getEachL(Max,E,[H|T],L,R):-
 		E>=H,
-		E+H=<Max,
-		getEachL(Max,E,T,L,R).											
+		E+H<Max,
+		getEachL(Max,E,T,L,R).	
+getEachL(Max,E,[H|T],L,R):-
+		E<H,		
+		E+H<Max,	
+		Sum is E+H,	
+		Sum mod 2 =:=0,
+		getEachL(Max,E,T,L,R).									
 getEachL(Max,E,[H|_],L,L):-
-		E+H>Max.
+		E+H>=Max.
 		
 setTheNum(Max,Max,_,L,L).				
 setTheNum(N,Max,[],L,R):-
@@ -168,11 +195,8 @@ isPrime(X,Y):-
 		Ynew is Y+1,
 		isPrime(X,Ynew).	
 
-
-
 app([],L,L).
 app([E|T],L,[E|M]) :- app(T,L,M).
-
 
 merge_sort2([],[]).     % empty list is already sorted
 merge_sort2([X],[X]).   % single element list is already sorted
@@ -182,9 +206,8 @@ merge_sort2(List,Sorted):-
 	merge2(Sorted1,Sorted2,Sorted).                  % and sorted parts are merged
 merge2([],L,L).
 merge2(L,[],L):-L\=[].
-merge2([[A1,B1,S1,P1]|T1],[[A2,B2,S2,P2]|T2],[[A1,B1,S1,P1]|T]):-S1=<S2,merge(T1,[[A2,B2,S2,P2]|T2],T).
-merge2([[A1,B1,S1,P1]|T1],[[A2,B2,S2,P2]|T2],[[A2,B2,S2,P2]|T]):-S1>S2,merge([[A1,B1,S1,P1]|T1],T2,T).
-
+merge2([[A1,B1,S1,P1]|T1],[[A2,B2,S2,P2]|T2],[[A1,B1,S1,P1]|T]):-S1=<S2,merge2(T1,[[A2,B2,S2,P2]|T2],T).
+merge2([[A1,B1,S1,P1]|T1],[[A2,B2,S2,P2]|T2],[[A2,B2,S2,P2]|T]):-S1>S2,merge2([[A1,B1,S1,P1]|T1],T2,T).
 
 merge_sort([],[]).     % empty list is already sorted
 merge_sort([X],[X]).   % single element list is already sorted

@@ -1,18 +1,50 @@
-%finish
+%1770 -testLL2
+%1747
+test(Max,L):-
+	s3(Q,Max),
+	getn(Q,0,L).
+	
+getn([H|T],R,N):-
+	Rnew is R+1,
+	getn(T,Rnew,N).
+getn([],R,R).
+	
+s4(Q,Max):-	
+		s3(S3Result,Max),
+		findTheFinalAnswer(S3Result,S3Result,S4Result),
+		app([S4Result],[],Q).
+
+
+findTheFinalAnswer([[_,_,S,_]|T],L,R):-
+		member([_,_,S,_],T),
+		deleteDuplicateSum(S,T,[],Tnew),
+		findTheFinalAnswer(Tnew,L,R).
+findTheFinalAnswer([[A,B,S,P]|T],_,[A,B,S,P]):-
+		not(member([_,_,S,_],T)).
+				
+deleteDuplicateSum(N,[[_,_,S,_]|T],L,R):-
+		N=:=S,
+		deleteDuplicateSum(N,T,L,R).
+deleteDuplicateSum(N,[[A,B,S,P]|T],L,R):-
+		N=\=S,
+		app([[A,B,S,P]],L,Lnew),
+		deleteDuplicateSum(N,T,Lnew,R).
+deleteDuplicateSum(_,[],L,L).
+
+	
 s3(Q,Max):-
 		s2(S2Result,Max),
 		deletePartProduct(S2Result,[],Result),
 		quicksort(Result,Q).
 
 
-%delete the product which x+y could have more than one sum in S2result
 deletePartProduct([[_,_,_,D]|T],L,R):-	
-		theMember([_,_,_,D],T),
+		member([_,_,_,D],T),
 		deleteDuplicateNum(D,T,[],Tnew),
 		deletePartProduct(Tnew,L,R).
 					
 deletePartProduct([[A,B,C,D]|T],L,R):-	
-		not(theMember([_,_,_,D],T)),
+		not(member([_,_,_,D],T)),
 		app([[A,B,C,D]],L,Lnew),
 		deletePartProduct(T,Lnew,R).									
 deletePartProduct([],Ls,Ls).									
@@ -78,7 +110,9 @@ s1(Q,Max):-
 		toGetPL(Max,LPrimeS,L1,PLList),				%not p* p
 		toGetLL(Max,L1,LLList),					%not p* not p
 		app(PLList,LLList,Result),
-		quicksort(Result,Q).
+		remove([_,_,_,16],Result,Result2),
+		remove([_,_,_,81],Result2,Result3),
+		quicksort(Result3,Q).
 
 toGetPL(Max,L1,L2,R):-
 		getPLList(Max,L1,L2,[],R).
@@ -94,10 +128,21 @@ getEachPL(Max,E,[H|T],L,R):-
 		E+H=<Max,
 		E*E=\=H,
 		testLL(E,H),
+		E<H,
 		Sum is E+H,
 		Product is E*H,
 		app([[E,H,Sum,Product]],L,Lnew),
 		getEachPL(Max,E,T,Lnew,R).	
+
+getEachPL(Max,E,[H|T],L,R):-
+		E+H=<Max,
+		E*E=\=H,
+		testLL(E,H),
+		E>H,
+		Sum is E+H,
+		Product is E*H,
+		app([[H,E,Sum,Product]],L,Lnew),
+		getEachPL(Max,E,T,Lnew,R).			
 										
 getEachPL(Max,E,[H|T],L,R):-
 		E+H=<Max,
@@ -125,28 +170,27 @@ getLLList(Max,[H|T],L1,L2,R):-
 
 getEachL(_,_,[],L,L).
 getEachL(Max,E,[H|T],L,R):-
-		E=<H,
+		E<H,
 		E+H=<Max,
-		testLL(E,H),
+		testLL2(E,H),
 		not(testP2(E,H)),					%cannot have 2^11
 		Sum is E+H,
-		Product is E*H,
+		Product is E*H,		
 		app([[E,H,Sum,Product]],L,Lnew),
-		getEachL(Max,E,T,Lnew,R).	
+		getEachL(Max,E,T,Lnew,R).										
 
 getEachL(Max,E,[H|T],L,R):-
-		E>H,
+		E>=H,
 		E+H=<Max,
 		getEachL(Max,E,T,L,R).					
 getEachL(Max,E,[H|T],L,R):-
-		E=<H,
-		testLL(E,H),
+		E<H,
 		testP2(E,H),						%cannot have 2^11     					
 		getEachL(Max,E,T,L,R).
 getEachL(Max,E,[H|T],L,R):-
-		E=<H,
+		E<H,
 		E+H=<Max,
-		not(testLL(E,H)),
+		not(testLL2(E,H)),
 		getEachL(Max,E,T,L,R).
 						
 getEachL(Max,E,[H|_],L,L):-
@@ -158,16 +202,63 @@ testP2(E,H):-
 
 
 testLL(E,H):-
-		getSamllestFactorOfH(H,2,F),
+		getSamllestFactor(H,2,F),
 		E*F+H/F=<100.
 
+
+
+
+
+
+
+testLL2(E,H):-
+		getSamllestFactor(E,2,EF),
+		E/EF+H*EF=<100,
+		!.
+
+testLL2(E,H):-
+		getSamllestFactor(H,2,HF),
+		E*HF+H/HF=<100,
+		!.
+
+testLL2(E,H):-
+		getSamllestFactor(E,2,EF),
+		getSamllestFactor2(H,2,EF,HF),
+		E/EF*HF+H/HF*EF=<100,
+		!.
+
+testLL2(E,H):-
+		getSamllestFactor(H,2,HF),
+		getSamllestFactor2(E,2,HF,EF),
+		E/EF*HF+H/HF*EF=<100,
+		!.
+		
+getSamllestFactor2(E,T,C,R):-
+		T<E,
+		T=\=C,
+		E mod T=\=0,
+		Tnew is T+1,
+		getSamllestFactor(E,Tnew,R).		
+getSamllestFactor2(E,T,C,R):-
+		T<E,
+		T=:=C,
+		Tnew is T+1,
+		getSamllestFactor(E,Tnew,R).
+getSamllestFactor2(E,T,C,T):-
+		T<E,
+		T=\=C,
+		E mod T=:=0,
+		!.
+
+
+
 %get the smalles factor of H
-getSamllestFactorOfH(E,T,R):-
+getSamllestFactor(E,T,R):-
 		T<E,
 		E mod T=\=0,
 		Tnew is T+1,
-		getSamllestFactorOfH(E,Tnew,R).		
-getSamllestFactorOfH(E,T,T):-
+		getSamllestFactor(E,Tnew,R).		
+getSamllestFactor(E,T,T):-
 		T<E,
 		E mod T=:= 0.	
 		
@@ -260,16 +351,16 @@ quicksort(List,Sorted)     :- var(List),
                              !, 
                              perm(Sorted,List),
                              quicksort(List,Sorted).
-quicksort([X|Tail],Sorted) :- split(X,Tail,Small,Big),
+quicksort([X|Tail],Sorted) :- tosplit(X,Tail,Small,Big),
                              quicksort(Small,SortedSmall),
                              quicksort(Big,SortedBig),
                              app(SortedSmall,[X|SortedBig],Sorted).
 
-split(_,[],[],[]).
-split([A,B,X,D],[[E,F,Y,G]|Tail],[[E,F,Y,G]|Small],Big)  :- X > Y,
+tosplit(_,[],[],[]).
+tosplit([A,B,X,D],[[E,F,Y,G]|Tail],[[E,F,Y,G]|Small],Big)  :- X > Y,
                                    !,
-                                   split([A,B,X,D],Tail,Small,Big).
-split( [A,B,X,D],[[E,F,Y,G]|Tail],Small,[[E,F,Y,G]|Big]) :- split([A,B,X,D],Tail,Small,Big).
+                                   tosplit([A,B,X,D],Tail,Small,Big).
+tosplit( [A,B,X,D],[[E,F,Y,G]|Tail],Small,[[E,F,Y,G]|Big]) :- tosplit([A,B,X,D],Tail,Small,Big).
 
 app([],L,L).
 app([E|T],L,[E|M]) :- app(T,L,M).
@@ -281,6 +372,5 @@ perm(X,[E|Y]) :- remove(E,X,Z),
 remove(X,[X|R],R).
 remove(X,[E|R],[E|T]) :- remove(X,R,T).	
 
-
-theMember(E,[E|_]):-!.
-theMember(E,[_|R]) :- theMember(E,R).
+member(E,[E|_]):-!.
+member(E,[_|R]) :- member(E,R).

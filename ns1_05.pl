@@ -1,4 +1,4 @@
-%right final s1 按S 排列 
+%new final right s1 没有按照和排列
 test(Max,L):-
 	s1(Q,Max),
 	getn(Q,0,L).
@@ -17,9 +17,8 @@ s1(Q,Max):-
 		toGetPL(Max,LPrimeS,L1,PLList),				%not p* p
 		toGetLL(Max,L1,LLList),					%not p* not p
 		app(PLList,LLList,Result),
-		merge_sort(Result,Result2),
-		getFinalAns(Result2,[],Result3),
-		merge_sort2(Result3,Q).
+		merge_sort(Result,Result9),
+		getFinalAns(Result9,[],Q).
 
 getFinalAns([[A1,B1,S1,P1],[A2,B2,S2,P2]|T],L,R):-
 		P1=:=P2,
@@ -168,22 +167,25 @@ isPrime(X,Y):-
 		Ynew is Y+1,
 		isPrime(X,Ynew).	
 
+quicksort2([],[]).
+quicksort2(List,Sorted)     :- var(List), 
+                             !, 
+                             perm(Sorted,List),
+                             quicksort2(List,Sorted).
+quicksort2([X|Tail],Sorted) :- split2(X,Tail,Small,Big),
+                             quicksort2(Small,SortedSmall),
+                             quicksort2(Big,SortedBig),
+                             app(SortedSmall,[X|SortedBig],Sorted).
+
+split2(_,[],[],[]).
+split2([A,B,C,D],[[E,F,G,H]|Tail],[[E,F,G,H]|Small],Big)  :- D > H,
+                                   !,
+                                   split2([A,B,C,D],Tail,Small,Big).
+split2( [A,B,C,D],[[E,F,G,H]|Tail],Small,[[E,F,G,H]|Big]) :- split2([A,B,C,D],Tail,Small,Big).
 
 
 app([],L,L).
 app([E|T],L,[E|M]) :- app(T,L,M).
-
-
-merge_sort2([],[]).     % empty list is already sorted
-merge_sort2([X],[X]).   % single element list is already sorted
-merge_sort2(List,Sorted):-
-    List=[_,_|_],divide(List,L1,L2),     % list with at least two elements is divided into two parts
-	merge_sort2(L1,Sorted1),merge_sort2(L2,Sorted2),  % then each part is sorted
-	merge2(Sorted1,Sorted2,Sorted).                  % and sorted parts are merged
-merge2([],L,L).
-merge2(L,[],L):-L\=[].
-merge2([[A1,B1,S1,P1]|T1],[[A2,B2,S2,P2]|T2],[[A1,B1,S1,P1]|T]):-S1=<S2,merge(T1,[[A2,B2,S2,P2]|T2],T).
-merge2([[A1,B1,S1,P1]|T1],[[A2,B2,S2,P2]|T2],[[A2,B2,S2,P2]|T]):-S1>S2,merge([[A1,B1,S1,P1]|T1],T2,T).
 
 
 merge_sort([],[]).     % empty list is already sorted
