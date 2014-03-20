@@ -1,4 +1,0 @@
-Prolog
-======
-
-The prolog coursework
